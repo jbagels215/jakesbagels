@@ -743,6 +743,80 @@
     }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Scatter crumbs and seeds across the page
+    window.addEventListener('load', function() {
+      const body = document.body;
+      const pageHeight = body.scrollHeight;
+      const pageWidth = body.clientWidth;
+
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', pageWidth);
+      svg.setAttribute('height', pageHeight);
+      svg.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:1;';
+
+      const shapes = [];
+
+      for (let i = 0; i < 360; i++) {
+        const x = Math.random() * pageWidth;
+        const y = Math.random() * pageHeight;
+        const r = Math.random() * 360;
+        const type = Math.floor(Math.random() * 6);
+        let el;
+
+        switch(type) {
+          case 0: // White sesame seed
+            el = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+            el.setAttribute('cx', x); el.setAttribute('cy', y);
+            el.setAttribute('rx', 3.5); el.setAttribute('ry', 1.8);
+            el.setAttribute('transform', `rotate(${r} ${x} ${y})`);
+            el.setAttribute('fill', 'rgba(225,210,170,0.4)');
+            break;
+          case 1: // Black sesame seed
+            el = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+            el.setAttribute('cx', x); el.setAttribute('cy', y);
+            el.setAttribute('rx', 3); el.setAttribute('ry', 1.5);
+            el.setAttribute('transform', `rotate(${r} ${x} ${y})`);
+            el.setAttribute('fill', 'rgba(30,30,30,0.25)');
+            break;
+          case 2: // Poppy seed
+            el = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            el.setAttribute('cx', x); el.setAttribute('cy', y);
+            el.setAttribute('r', 1.5);
+            el.setAttribute('fill', 'rgba(40,35,30,0.22)');
+            break;
+          case 3: // Bread crumb
+            el = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            el.setAttribute('x', x); el.setAttribute('y', y);
+            el.setAttribute('width', 2 + Math.random() * 4);
+            el.setAttribute('height', 1.5 + Math.random() * 3);
+            el.setAttribute('rx', 0.5);
+            el.setAttribute('transform', `rotate(${r} ${x} ${y})`);
+            el.setAttribute('fill', 'rgba(180,150,100,0.3)');
+            break;
+          case 4: // Garlic/onion flake
+            el = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            el.setAttribute('x', x); el.setAttribute('y', y);
+            el.setAttribute('width', 3 + Math.random() * 3);
+            el.setAttribute('height', 2 + Math.random() * 2);
+            el.setAttribute('rx', 0.8);
+            el.setAttribute('transform', `rotate(${r} ${x} ${y})`);
+            el.setAttribute('fill', 'rgba(160,120,60,0.25)');
+            break;
+          case 5: // Salt crystal
+            el = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            el.setAttribute('x', x); el.setAttribute('y', y);
+            el.setAttribute('width', 2.5); el.setAttribute('height', 2.5);
+            el.setAttribute('rx', 0.3);
+            el.setAttribute('transform', `rotate(${r} ${x} ${y})`);
+            el.setAttribute('fill', 'rgba(255,255,255,0.18)');
+            break;
+        }
+        if (el) svg.appendChild(el);
+      }
+
+      body.appendChild(svg);
+    });
   </script>
 
 </body>
