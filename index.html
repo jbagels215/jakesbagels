@@ -13,12 +13,16 @@
   <meta property="og:description" content="Hand-rolled, kettle-boiled bagels made in small batches. Order on Hotplate.">
   <meta property="og:url" content="https://www.jakesbagels.net/">
   <meta property="og:site_name" content="Jake's Bagels">
+  <meta property="og:image" content="https://www.jakesbagels.net/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:locale" content="en_US">
 
   <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Jake's Bagels — Fishtown, Philadelphia">
   <meta name="twitter:description" content="Hand-rolled, kettle-boiled bagels made in small batches. Order on Hotplate.">
+  <meta name="twitter:image" content="https://www.jakesbagels.net/og-image.jpg">
 
   <!-- Additional SEO -->
   <meta name="robots" content="index, follow">
@@ -138,7 +142,8 @@
     nav {
       position: fixed;
       top: 0;
-      width: 100%;
+      left: 0;
+      right: 0;
       z-index: 100;
       padding: 1rem 2rem;
       display: flex;
@@ -354,6 +359,7 @@
       padding: 2rem 2rem 5rem;
       max-width: 1000px;
       margin: 0 auto;
+      overflow: hidden;
     }
 
     .gallery-header {
@@ -660,6 +666,8 @@
     </a>
   </nav>
 
+  <div id="page-wrap" style="overflow:hidden;width:100%;max-width:100vw;position:relative;">
+
   <!-- HERO -->
   <section class="hero">
     <div class="hero-badge">Fishtown, Philadelphia<br>~ Baking since 2022 | Now serving 2026 ~</div>
@@ -785,6 +793,8 @@
     &copy; 2026 Jake's Bagels, LLC · Fishtown, Philadelphia, PA · Made with flour, water, malt, yeast &amp; love
   </footer>
 
+  </div><!-- end page-wrap -->
+
   <script>
     const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => {
@@ -803,12 +813,12 @@
     window.addEventListener('load', function() {
       const body = document.body;
       const pageHeight = body.scrollHeight;
-      const pageWidth = body.clientWidth;
+      const pageWidth = window.innerWidth;
 
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.setAttribute('width', pageWidth);
       svg.setAttribute('height', pageHeight);
-      svg.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:1;';
+      svg.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:1;overflow:hidden;max-width:100vw;';
 
       const shapes = [];
 
