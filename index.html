@@ -3,6 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Analytics (GA4) — Measurement ID G-DQYVJD0W76 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DQYVJD0W76"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-DQYVJD0W76');
+  </script>
   <title>Jake's Bagels — Hand-Rolled, Kettle-Boiled Bagels in Fishtown, Philadelphia</title>
   <meta name="description" content="Hand-rolled, kettle-boiled bagels made in small batches in Fishtown, Philadelphia. Order half dozens on Hotplate. It's what Philly deserves.&trade;">
   <link rel="canonical" href="https://www.jakesbagels.net/">
@@ -145,7 +154,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: background 0.4s, backdrop-filter 0.4s;
+      transition: background 0.4s, backdrop-filter 0.4s, top 0.35s ease;
     }
 
     nav.scrolled {
@@ -191,6 +200,7 @@
       text-align: center;
       padding: 6rem 2rem 4rem;
       position: relative;
+      transition: padding-top 0.35s ease;
     }
 
     .hero-badge {
@@ -632,6 +642,72 @@
     }
 
     /* ── RESPONSIVE ── */
+    /* ── ANNOUNCEMENT BAR ── */
+    .announcement-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200; /* above nav (z-index 100) */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 0.55rem 2.75rem 0.55rem 1.25rem;
+      background: var(--red-marker);
+      color: var(--sharpie);
+      font-family: 'Patrick Hand', 'Lato', sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.3;
+      text-align: center;
+      border-bottom: 2px dashed var(--bag-dark);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+    .announcement-bar[hidden] { display: none; }
+    .announcement-bar.dismissing {
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      nav, .hero, .announcement-bar { transition: none; }
+    }
+
+    .announcement-bar a {
+      color: var(--sharpie);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .announcement-close {
+      position: absolute;
+      right: 0.6rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--sharpie);
+      font-family: 'Permanent Marker', cursive;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 0.35rem;
+      opacity: 0.85;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .announcement-close:hover {
+      opacity: 1;
+      transform: translateY(-50%) scale(1.15) rotate(-8deg);
+    }
+
+    /* When the bar is showing, push the fixed nav + hero down by its height */
+    body.has-announcement nav { top: var(--ann-h, 0px); }
+    body.has-announcement .hero { padding-top: calc(6rem + var(--ann-h, 0px)); }
+
+    @media (max-width: 480px) {
+      .announcement-bar { font-size: 0.95rem; padding-left: 1rem; padding-right: 2.4rem; }
+    }
+
     @media (max-width: 768px) {
       .contact-box {
         grid-template-columns: 1fr;
@@ -652,6 +728,14 @@
   </style>
 </head>
 <body>
+
+  <!-- ANNOUNCEMENT BAR — edit the text below; bump ANNOUNCEMENT_VERSION in the script when you do -->
+  <div id="announcement-bar" class="announcement-bar" hidden>
+    <span id="announcement-text">
+      🥯 This Sunday's drop is live — <a href="https://www.hotplate.com/jakesbagelsphl" target="_blank" rel="noopener">pre-order on Hotplate</a> before it sells out!
+    </span>
+    <button id="announcement-close" class="announcement-close" aria-label="Dismiss announcement">&times;</button>
+  </div>
 
   <!-- NAV -->
   <nav id="nav">
@@ -790,6 +874,47 @@
   </div><!-- end page-wrap -->
 
   <script>
+    // ── ANNOUNCEMENT BAR ──
+    // Bump this whenever you change the message so the bar re-appears
+    // for anyone who dismissed the previous one. A date works fine.
+    const ANNOUNCEMENT_VERSION = "2026-07-13";
+    (function () {
+      const bar = document.getElementById('announcement-bar');
+      if (!bar) return;
+      const closeBtn = document.getElementById('announcement-close');
+      const KEY = 'jb-announcement-dismissed';
+
+      function setBarHeight() {
+        const h = bar.hidden ? 0 : bar.offsetHeight;
+        document.documentElement.style.setProperty('--ann-h', h + 'px');
+      }
+
+      if (localStorage.getItem(KEY) !== ANNOUNCEMENT_VERSION) {
+        bar.hidden = false;
+        document.body.classList.add('has-announcement');
+      }
+      setBarHeight();
+      window.addEventListener('resize', setBarHeight);
+
+      closeBtn.addEventListener('click', function () {
+        // Slide the bar up and ease the nav + hero closed together.
+        bar.classList.add('dismissing');
+        document.body.classList.remove('has-announcement');
+        document.documentElement.style.setProperty('--ann-h', '0px');
+        try { localStorage.setItem(KEY, ANNOUNCEMENT_VERSION); } catch (e) {}
+
+        // Only pull it out of flow once the slide finishes.
+        let done = false;
+        function finish() {
+          if (done) return;
+          done = true;
+          bar.hidden = true;
+        }
+        bar.addEventListener('transitionend', finish, { once: true });
+        setTimeout(finish, 500); // fallback if transitionend doesn't fire
+      });
+    })();
+
     const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 60);
